@@ -28,10 +28,13 @@ class Tokenizer:
             words = sentence.lower().split()
             word_counts.update(words)
 
+        # Reserve token ID 0 for unknown words
         self.word_to_index = {
-            word: index
-            for index, word in enumerate(word_counts.keys())
+            "<UNK>": 0
         }
+
+        for index, word in enumerate(word_counts.keys(), start=1):
+            self.word_to_index[word] = index
 
         self.index_to_word = {
             index: word
@@ -39,3 +42,27 @@ class Tokenizer:
         }
 
         self.vocabulary_size = len(self.word_to_index)
+
+    def encode(self, text):
+        """
+        Converts a string into a list of token IDs.
+        """
+
+        words = text.lower().split()
+
+        return [
+            self.word_to_index.get(word, self.word_to_index["<UNK>"])
+            for word in words
+        ]
+
+    def decode(self, token_ids):
+        """
+        Converts token IDs back into a string.
+        """
+
+        words = [
+            self.index_to_word[token]
+            for token in token_ids
+        ]
+
+        return " ".join(words)
